@@ -3,10 +3,10 @@ import numpy as np
 from .intensity import negative, log_transform, gamma_correction
 from .histogram import hist_equalization, clahe_equalization
 
-def enhance_license_plate(img, processing_mode="enhanced_grayscale"):
+def enhance_license_plate(img):
     """
     Tiền xử lý ảnh cho nhận dạng biển số xe
-    Chỉ có 2 chế độ đơn giản: enhanced_grayscale và binary
+    Trả về ảnh nhị phân tối ưu cho OCR
     """
     try:
         # Chuyển sang ảnh xám nếu là ảnh màu
@@ -19,30 +19,28 @@ def enhance_license_plate(img, processing_mode="enhanced_grayscale"):
         enhanced = clahe_equalization(gray, clip=2.5, grid=8)
         enhanced = cv2.GaussianBlur(enhanced, (3, 3), 0)
 
-        if processing_mode == "binary":
-            # Chế độ nhị phân cho OCR
-            result = cv2.adaptiveThreshold(enhanced, 255, 
-                                           cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
-                                           cv2.THRESH_BINARY, 
-                                           21, 8)
-            return result
-        else:
-            # Chế độ mặc định: ảnh xám cải thiện
-            kernel_sharp = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]]) / 1.0
-            sharpened = cv2.filter2D(enhanced, -1, kernel_sharp)
-            result = np.clip(sharpened, 0, 255).astype(np.uint8)
-            return result
+        # Chuyển đổi thành ảnh nhị phân cho OCR
+        result = cv2.adaptiveThreshold(enhanced, 255, 
+                                       cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+                                       cv2.THRESH_BINARY, 
+                                       21, 8)
+        return result
     
     except Exception as e:
         print(f"Lỗi trong enhance_license_plate: {e}")
-        # Fallback: trả về ảnh xám cải thiện đơn giản
+        # Fallback: xử lý đơn giản
         if len(img.shape) == 3:
             gray_fallback = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
         else:
             gray_fallback = img.copy()
         
         enhanced_fallback = clahe_equalization(gray_fallback, clip=2.0, grid=8)
-        return enhanced_fallback
+        # Trả về ảnh nhị phân fallback
+        binary_fallback = cv2.adaptiveThreshold(enhanced_fallback, 255, 
+                                                cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+                                                cv2.THRESH_BINARY, 
+                                                15, 5)
+        return binary_fallback
 
 def enhance_satellite_image(img):
     """

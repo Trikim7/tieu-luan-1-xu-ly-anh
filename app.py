@@ -119,21 +119,9 @@ if uploaded_file:
         )
         
         if application == "Xử lý biển số xe":
-            st.info("Tiền xử lý ảnh cho nhận diện biến số xe")
+            st.info("Tiền xử lý ảnh biển số xe để tối ưu cho nhận dạng ký tự (OCR). Kết quả là ảnh nhị phân với ký tự rõ nét.")
             
-            # Thêm tùy chọn chế độ xử lý
-            processing_mode = st.radio(
-                "Chọn chế độ xử lý:",
-                ["Ảnh xám cải thiện (dễ xem)", "Ảnh nhị phân (cho OCR)"],
-                index=0
-            )
-            
-            mode_mapping = {
-                "Ảnh xám cải thiện (dễ xem)": "enhanced_grayscale",
-                "Ảnh nhị phân (cho OCR)": "binary"
-            }
-            
-            processed = enhance_license_plate(img, mode_mapping[processing_mode])
+            processed = enhance_license_plate(img)
         elif application == "Cải thiện ảnh vệ tinh":
             st.info("Cải thiện chất lượng ảnh vệ tinh để hỗ trợ phân tích trong các hệ thống thông tin địa lý (GIS).")
             processed = enhance_satellite_image(img)
