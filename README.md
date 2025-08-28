@@ -43,7 +43,7 @@ Thực hiện các yêu cầu của tiểu luận 1:
 1. **Clone repository**:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/tieu-luan-1-xu-ly-anh.git
+git clone https://github.com/Trikim7/tieu-luan-1-xu-ly-anh.git
 cd tieu-luan-1-xu-ly-anh
 ```
 
