@@ -1,30 +1,28 @@
 import numpy as np
+import cv2
 
 def negative(img):
     return 255 - img
 
-def log_transform(img):
+def log_transform(img, c=1):
     """
-    Biến đổi logarithm để tăng cường vùng tối
-    s = c * log(1 + r)
+    Thực hiện biến đổi logarithm: s = c * log(1 + r)
+    
+    Args:
+        img: Ảnh đầu vào (grayscale, uint8)
+        c: Hệ số scaling (default=1)
     """
-    # Đảm bảo ảnh đầu vào là float để tính toán chính xác
-    img_float = img.astype(np.float64)
+    # Chuyển ảnh về float32 và chuẩn hóa về [0, 1]
+    img_float = img.astype(np.float32) / 255.0
     
-    # Tính hằng số c để đảm bảo giá trị output trong khoảng [0, 255]
-    max_val = np.max(img_float)
-    if max_val == 0:
-        # Ảnh toàn đen, trả về ảnh gốc
-        return img
+    # Áp dụng log transform: s = c * log(1 + r)
+    # Sử dụng log1p để tính chính xác log(1 + x)
+    log_img = c * np.log1p(img_float)
     
-    c = 255.0 / np.log(1.0 + max_val)
+    # Chuẩn hóa kết quả về [0, 255] để tận dụng toàn bộ dynamic range
+    log_img = cv2.normalize(log_img, None, 0, 255, cv2.NORM_MINMAX)
     
-    # Áp dụng biến đổi log
-    log_img = c * np.log(1.0 + img_float)
-    
-    # Đảm bảo giá trị trong khoảng [0, 255] và chuyển về uint8
-    log_img = np.clip(log_img, 0, 255)
-    
+    # Chuyển về uint8 cho hiển thị
     return log_img.astype(np.uint8)
 
 def gamma_correction(img, gamma=1.0):
