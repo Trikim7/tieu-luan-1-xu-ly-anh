@@ -17,19 +17,21 @@ Thực hiện các yêu cầu của tiểu luận 1:
 - **Negative**: Âm bản của ảnh
 - **Log Transform**: Biến đổi logarithm để tăng cường vùng tối
 - **Gamma Correction**: Điều chỉnh gamma để cải thiện độ sáng
+- **Power-law Transform**: Biến đổi luật lũy thừa s = c * r^γ
 - **Piecewise Linear**: Biến đổi tuyến tính từng đoạn
 
 ### 2. Cân bằng lược đồ mức xám (Histogram Processing)
 
 - **Histogram Equalization**: Cân bằng toàn cục
+- **AHE**: Cân bằng thích ứng (Adaptive Histogram Equalization)
 - **CLAHE**: Cân bằng cục bộ có giới hạn để giảm nhiễu
 
 ### 3. Ứng dụng thực tế (Applications)
 
-- **Cải thiện biển số xe**: Tăng cường độ rõ nét cho OCR
-- **Xử lý ảnh vệ tinh**: Tăng cường chi tiết địa hình
-- **Cải thiện ảnh thiếu sáng**: Tăng độ sáng vùng tối
-- **Khôi phục tài liệu**: Làm rõ văn bản bị mờ/ố vàng
+- **Cải thiện biển số xe**: Tiền xử lý cho OCR (chỉ dùng các phép biến đổi cơ bản)
+- **Xử lý ảnh vệ tinh**: Tăng cường chi tiết địa hình (log, gamma, CLAHE, piecewise)
+- **Cải thiện ảnh thiếu sáng**: Tăng độ sáng vùng tối (gamma, log, AHE)
+- **Khôi phục tài liệu**: Làm rõ văn bản bị mờ/ố vàng (negative, gamma, background subtraction)
 
 ## 🚀 Cài đặt
 
@@ -105,12 +107,9 @@ tieu_luan_1/
 ### Custom Implementations
 
 - **Histogram Equalization**: Tự implement CDF mapping
+- **AHE**: Adaptive histogram cho từng vùng cục bộ (có phiên bản nhanh)
 - **CLAHE**: Adaptive histogram với clip limit
 - **Log Transform**: Với xử lý edge cases
-- **Gamma Correction**: Công thức s = c * r^γ
-
-### Optimizations
-
-- Sử dụng OpenCV cho một số thuật toán để tránh artifacts
-- Bilateral filtering cho khử nhiễu thông minh
-- Adaptive thresholding cho nhị phân hóa
+- **Gamma/Power-law Transform**: Công thức s = c * r^γ (gộp gamma và power-law)
+- **Adaptive Thresholding**: Tự implement với integral image
+- **Background Subtraction**: Sử dụng sparse sampling và interpolation

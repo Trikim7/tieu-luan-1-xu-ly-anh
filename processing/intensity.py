@@ -10,14 +10,18 @@ def log_transform(img, c=1):
     
     Args:
         img: Ảnh đầu vào (grayscale, uint8)
-        c: Hệ số scaling (default=1)
+        c: Hệ số scaling (range từ 0.1 đến 50 để thấy rõ sự khác biệt)
     """
-    # Chuyển ảnh về float32 và chuẩn hóa về [0, 1]
-    img_float = img.astype(np.float32) / 255.0
+    # Chuyển ảnh về float64 để tránh overflow với c lớn
+    img_float = img.astype(np.float64) / 255.0
     
-    # Áp dụng log transform: s = c * log(1 + r)
-    # Sử dụng log1p để tính chính xác log(1 + x)
-    log_img = c * np.log1p(img_float)
+    # Áp dụng log transform với range rộng hơn
+    if c > 10:
+        # Với c lớn, sử dụng scaling đặc biệt để tránh overflow
+        log_img = c * np.log1p(img_float * 10) / 10
+    else:
+        # Với c nhỏ, dùng công thức thông thường
+        log_img = c * np.log1p(img_float)
     
     # Chuẩn hóa kết quả về [0, 255] để tận dụng toàn bộ dynamic range
     log_img = cv2.normalize(log_img, None, 0, 255, cv2.NORM_MINMAX)
@@ -25,8 +29,28 @@ def log_transform(img, c=1):
     # Chuyển về uint8 cho hiển thị
     return log_img.astype(np.uint8)
 
-def gamma_correction(img, gamma=1.0):
-    return np.array(255 * (img / 255) ** gamma, dtype=np.uint8)
+def gamma_correction(img, gamma=1.0, c=1.0):
+    """
+    Gamma correction (Power-law transformation): s = c * r^gamma
+    
+    Args:
+        img: Ảnh đầu vào
+        gamma: Tham số power
+            - gamma < 1: Tăng cường vùng tối (dark regions)
+            - gamma > 1: Tăng cường vùng sáng (bright regions) 
+            - gamma = 1: Không thay đổi (linear)
+        c: Hằng số scaling (mặc định = 1)
+    """
+    # Chuẩn hóa về [0,1]
+    img_normalized = img.astype(np.float32) / 255.0
+    
+    # Áp dụng power-law: s = c * r^gamma
+    transformed = c * np.power(img_normalized, gamma)
+    
+    # Clip và chuyển về [0,255]
+    transformed = np.clip(transformed * 255, 0, 255)
+    
+    return transformed.astype(np.uint8)
 
 def _piecewise_lut(r1: int, s1: int, r2: int, s2: int) -> np.ndarray:
     """
