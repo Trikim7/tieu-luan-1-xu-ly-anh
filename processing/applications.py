@@ -137,8 +137,6 @@ def enhance_satellite_image(img):
 def enhance_low_light_image(img, method="enhanced"):
     """
     Nâng cao chất lượng ảnh chụp trong điều kiện ánh sáng kém
-    Sử dụng HSV color space để tránh color shift và nhiễu màu
-    Chỉ hỗ trợ ảnh màu (RGB)
     """
     # Chuyển sang HSV để xử lý riêng brightness và saturation
     import cv2
@@ -195,3 +193,5 @@ def enhance_low_light_image(img, method="enhanced"):
             enhanced = piecewise_linear(enhanced, int(p5), 10, int(p95), 240)  # Gentle range [10,240]
     
     return enhanced
+
+
